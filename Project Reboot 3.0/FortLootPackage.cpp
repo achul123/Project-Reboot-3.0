@@ -341,7 +341,7 @@ void PickLootDropsFromLootPackage(const std::vector<UDataTable*>& LPTables, cons
 
                 */
 
-                bool IsWeapon = PickedPackage->GetLootPackageID().ToString().contains(".Weapon.") && WeaponItemDefinition; // ONG?
+                bool IsWeapon = PickedPackage->GetLootPackageID().ToString().find(".Weapon.") != std::string::npos && WeaponItemDefinition; // ONG?
 
                 if (IsWeapon)
                 {
@@ -394,7 +394,8 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
         LTDTables.clear();
         LPTables.clear();
 
-        if (Fortnite_Version == 12.00)
+        // Skip only for 12.00, but allow 12.61 to load loot
+        if (Fortnite_Version == 12.00 && Fortnite_Version != 12.61)
             return LootDrops;
 
         bool bFoundPlaylistTable = false;
@@ -411,8 +412,8 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
             {
                 auto LootTierDataStr = LootTierDataSoft.SoftObjectPtr.ObjectID.AssetPathName.ToString();
                 auto LootPackagesStr = LootPackagesSoft.SoftObjectPtr.ObjectID.AssetPathName.ToString();
-                auto LootTierDataTableIsComposite = LootTierDataStr.contains("Composite");
-                auto LootPackageTableIsComposite = LootPackagesStr.contains("Composite");
+                auto LootTierDataTableIsComposite = LootTierDataStr.find("Composite") != std::string::npos;
+                auto LootPackageTableIsComposite = LootPackagesStr.find("Composite") != std::string::npos;
 
                 UDataTable* StrongLootTierData = nullptr;
                 UDataTable* StrongLootPackage = nullptr;
@@ -477,9 +478,9 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
 
                         auto LootTierDataTableStr = DefaultLootTableData->LootTierData.SoftObjectPtr.ObjectID.AssetPathName.ToString();
 
-                        auto LootTierDataTableIsComposite = LootTierDataTableStr.contains("Composite");
+                        auto LootTierDataTableIsComposite = LootTierDataTableStr.find("Composite") != std::string::npos;
                         auto LootPackageTableStr = DefaultLootTableData->LootPackageData.SoftObjectPtr.ObjectID.AssetPathName.ToString();
-                        auto LootPackageTableIsComposite = LootPackageTableStr.contains("Composite");
+                        auto LootPackageTableIsComposite = LootPackageTableStr.find("Composite") != std::string::npos;
 
                         auto LootTierDataPtr = DefaultLootTableData->LootTierData.Get(LootTierDataTableIsComposite ? CompositeDataTableClass : UDataTable::StaticClass(), true);
                         auto LootPackagePtr = DefaultLootTableData->LootPackageData.Get(LootPackageTableIsComposite ? CompositeDataTableClass : UDataTable::StaticClass(), true);
@@ -508,7 +509,7 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
                                     if (Tag.TagName == CurrentOverrideTag.TagName)
                                     {
                                         auto OverrideLootPackageTableStr = Value.Second.LootPackageData.SoftObjectPtr.ObjectID.AssetPathName.ToString();
-                                        auto bOverrideIsComposite = OverrideLootPackageTableStr.contains("Composite");
+                                        auto bOverrideIsComposite = OverrideLootPackageTableStr.find("Composite") != std::string::npos;
 
                                         auto ptr = Value.Second.LootPackageData.Get(bOverrideIsComposite ? CompositeDataTableClass : UDataTable::StaticClass(), true);
 
@@ -562,7 +563,7 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
                                     if (Tag.TagName == CurrentOverrideTag.TagName)
                                     {
                                         auto OverrideLootTierDataStr = Value.Second.LootTierData.SoftObjectPtr.ObjectID.AssetPathName.ToString();
-                                        auto bOverrideIsComposite = OverrideLootTierDataStr.contains("Composite");
+                                        auto bOverrideIsComposite = OverrideLootTierDataStr.find("Composite") != std::string::npos;
 
                                         auto ptr = Value.Second.LootTierData.Get(bOverrideIsComposite ? CompositeDataTableClass : UDataTable::StaticClass(), true);
 
@@ -625,10 +626,7 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
 
     if (!Addresses::LoadAsset)
     {
-        if (Fortnite_Version <= 6 
-            || std::floor(Fortnite_Version) == 9
-            || Fortnite_Version == 10.00
-            || Fortnite_Version == 12.61) // the tables unload!
+        if (Fortnite_Version <= 6 || std::floor(Fortnite_Version) == 9 || std::floor(Fortnite_Version) == 12) // the tables unload!
         {
             LTDTables.clear();
             LPTables.clear();
@@ -647,8 +645,8 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
                 {
                     auto LootTierDataStr = LootTierDataSoft.SoftObjectPtr.ObjectID.AssetPathName.ToString();
                     auto LootPackagesStr = LootPackagesSoft.SoftObjectPtr.ObjectID.AssetPathName.ToString();
-                    auto LootTierDataTableIsComposite = LootTierDataStr.contains("Composite");
-                    auto LootPackageTableIsComposite = LootPackagesStr.contains("Composite");
+                    auto LootTierDataTableIsComposite = LootTierDataStr.find("Composite") != std::string::npos;
+                    auto LootPackageTableIsComposite = LootPackagesStr.find("Composite") != std::string::npos;
 
                     UDataTable* StrongLootTierData = nullptr;
                     UDataTable* StrongLootPackage = nullptr;
@@ -696,7 +694,7 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
 
     // auto ChosenLootPackageName = ChosenRowLootTierData->GetLootPackage().ToString();
 
-    // if (ChosenLootPackageName.contains(".Empty")) { return PickLootDropsNew(TierGroupName, bPrint, ++recursive); }
+    // if (ChosenLootPackageName.find(".Empty") != std::string::npos) { return PickLootDropsNew(TierGroupName, bPrint, ++recursive); }
 
     float NumLootPackageDrops = ChosenRowLootTierData->GetNumLootPackageDrops();
 
