@@ -39,12 +39,13 @@ inline void MakeLogger(const std::string& LoggerName)
 
 inline void InitLogger()
 {
-    FreeConsole();
-    AttachConsole(ATTACH_PARENT_PROCESS);
+    //FreeConsole();
+    //AttachConsole(ATTACH_PARENT_PROCESS);
+
 
     FILE* stream = nullptr;
 
-    bool bStopFortniteOutput = false;
+    bool bStopFortniteOutput = true;
 
     if (bStopFortniteOutput)
     {
