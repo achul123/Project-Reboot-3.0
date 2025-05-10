@@ -627,7 +627,8 @@ std::vector<LootDrop> PickLootDrops(FName TierGroupName, int WorldLevel, int For
     {
         if (Fortnite_Version <= 6 
             || std::floor(Fortnite_Version) == 9
-            || Fortnite_Version == 10.00) // the tables unload!
+            || Fortnite_Version == 10.00
+            || Fortnite_Version == 12.61) // the tables unload!
         {
             LTDTables.clear();
             LPTables.clear();
